@@ -4,7 +4,7 @@ const argv = require('minimist');
 
 const encode = require('./encode')
 const decode = require('./decode');
-const cipherTransform = require('./cipher-transform')
+const cipherTransform = require('./cipher-transform');
 
 
 const argvObj = argv(process.argv.slice(2));
@@ -14,43 +14,47 @@ const action = argvObj.a || argvObj.action;
 const input = argvObj.i || argvObj.input;
 const output = argvObj.o || argvObj.output;
 
-if (!action || !shift) {
+if (!action || shift === undefined) {
     process.stderr.write('||----- Please, pass all required options\n')
     process.stderr.write('||----- -s or --shift for cipher shift - any positive number\n')
     process.stderr.write('||----- -a or --action for cipher action - encode or decode')
     process.exit(1)
 }
 
-let readPath = '';
-let writePath = '';
+if (shift === true) {
+    process.stderr.write('||----- Please try again with a positive shift\n')
+    process.exit(1) 
+}
+let inputPath = '';
+let outputPath = '';
+
+input && (inputPath = path.resolve(__dirname, input))
+output && (outputPath = path.resolve(__dirname, output))
 
 try {
-    input && (readPath = path.join(__dirname, input));
-    output && (writePath = path.join(__dirname, output));
+    if(!!input) {
+        inputPath = path.resolve(__dirname, input)
+        if(!(fs.existsSync(inputPath))) throw new Error('wrong input path!')
+    }
+    if (!!output) {
+        outputPath = path.resolve(__dirname, output)
+        if(!(fs.existsSync(outputPath))) throw new Error('Wrong output path!')
+    }
 } catch (error) {
-    process.stderr.write('||----- Error\n')
-    process.stderr.write('||----- Please, make sure files are exist\n')
-    process.stderr.write('||----- Error info: ' + error)
+    process.stderr.write('||----- Oops! :)\n')
+    process.stderr.write('||----- Please, make sure files are exist and paths are correct \n')
+    process.stderr.write('||----- ' + error)
     process.exit(1)
 }
-console.log('after');
-const read = input ? fs.createReadStream(readPath) : process.stdin
-const transform = new cipherTransform(action === 'encode' ? encode : decode, shift);
-const write = output ? fs.createWriteStream(writePath, {flags: 'a'}) : process.stdout;
 
+const read = input ? fs.createReadStream(inputPath) : process.stdin
+let write = output ? (fs.createWriteStream(outputPath, {flags: 'a'})) : process.stdout
+const transform = new cipherTransform(action === 'encode' ? encode : decode, shift, !!input);
+
+!input && (console.log('||---------- Please, type in string to ' + action))
+!input && process.stdin.resume()
 
 read
     .pipe(transform)
     .pipe(write);
-
-
-// process.stdin.on('data', function(chunk) {
-//     console.log('chank = ', chunk.toString());
-//     const arr = chunk.toString().split(' ').slice(2)
-//     const lastEl = arr[arr.length - 1];
-//     arr[arr.length - 1]= lastEl.slice(0, lastEl.indexOf('\r'))
-
-//     console.log(argv(arr));
-//     //console.log('You typed - ', str.slice(0, str.indexOf('\n')));
-// });
-
+    
