@@ -12,7 +12,14 @@ The programm encripts or decripts only english alphabet letters. Any other chara
 
 # How to use
 
-After instalation enter the following into command line "node ceasar-cipher-cli [options]", where options are parametras which determine the operation of the app:
+
+After npm install **go to ceasar-cipher-cli folder** to run programm commands without attaching folder name to commands
+
+```bash
+$ cd ceasar-cipher-cli
+```
+
+After that enter the following into command line "node ceasar-cipher-cli [options]", where options are parametras which determine the operation of the app:
 
 * -s, --shift: a shift
 * -i, --input: an input file
