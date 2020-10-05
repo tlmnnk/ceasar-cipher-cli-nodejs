@@ -34,7 +34,7 @@ If the **input** and/or **output** options are absent, then reading and/or writi
 Usage example:
 
 ```bash
-$ node my_caesar_cli -a encode -s 7 -i "./input.txt" -o "./output.txt"
+$ node ceasar-cipher-cli -a encode -s 7 -i "./input.txt" -o "./output.txt"
 ```
 
 Before:
